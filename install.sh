@@ -4,6 +4,8 @@ set -e
 
 REPO="phixenium-vsue/torappqml"
 ASSET="torappqml.tar.gz"
+# Фиксированный тег-запасной вариант: /releases/latest не отдаёт prerelease.
+PINNED="v0.1.0-beta"
 DEST="$HOME/.local/bin/torappqml"
 APPS="$HOME/.local/share/applications"
 DESKTOP="$APPS/torappqml.desktop"
@@ -32,12 +34,31 @@ MINE=0
 if [ -z "$TARBALL" ]; then
     TARBALL="$(mktemp -t torappqml-XXXX.tar.gz)"
     MINE=1
-    URL="https://github.com/$REPO/releases/latest/download/$ASSET"
-    echo "Downloading $URL..."
-    if command -v wget >/dev/null 2>&1; then
-        wget -q --show-progress -O "$TARBALL" "$URL" || { echo "wget failed"; exit 1; }
-    else
+    if ! command -v wget >/dev/null 2>&1; then
         echo "wget не найден"; exit 1
+    fi
+    OK=0
+    for URL in \
+        "https://github.com/$REPO/releases/latest/download/$ASSET" \
+        "https://github.com/$REPO/releases/download/$PINNED/$ASSET"
+    do
+        echo "Downloading $URL..."
+        if wget -q --show-progress -O "$TARBALL" "$URL"; then OK=1; break; fi
+        echo "  не удалось, пробую другой источник..."
+    done
+    if [ "$OK" != "1" ]; then
+        echo "Ищу ассет через GitHub API (включая prerelease)..."
+        API_URL="$(wget -qO- "https://api.github.com/repos/$REPO/releases" 2>/dev/null \
+            | grep -o "\"browser_download_url\": *\"[^\"]*$ASSET\"" \
+            | head -n1 | sed 's/.*"\(http[^"]*\)"/\1/')"
+        if [ -n "$API_URL" ] && wget -q --show-progress -O "$TARBALL" "$API_URL"; then
+            OK=1
+        fi
+    fi
+    if [ "$OK" != "1" ]; then
+        echo "Не удалось скачать $ASSET"
+        rm -f "$TARBALL"
+        exit 1
     fi
 fi
 [ -f "$TARBALL" ] || { echo "архив не найден: $TARBALL"; exit 1; }
