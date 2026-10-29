@@ -1,0 +1,12 @@
+DataDirectory /home/phablet/HTML/ollamabin/opencodeprojects/torappqml/tor_data
+SocksPort 0.0.0.0:9050
+TransPort 0.0.0.0:9040
+DNSPort 0.0.0.0:5353
+AutomapHostsOnResolve 1
+ControlPort 9151
+Log notice stdout
+
+UseBridges 1
+ClientTransportPlugin webtunnel exec /home/phablet/HTML/ollamabin/opencodeprojects/torappqml/tor/pluggable_transports/lyrebird
+Bridge webtunnel [2001:db8:c934:3cba:7cd2:7e56:c8c9:40a6]:443 412F21AAD09FA4F83AD52186458466BEC5D27795 url=https://cdn-45.triplebit.dev/yaux5diphu8Meiqu ver=0.0.2
+Bridge webtunnel [2001:db8:61d8:dd06:ee48:5658:1005:8c1a]:443 ED7E43FDFA82588D3E01B713F649C5C00C452B0A url=https://mdapi.ch/api/v1/proxy/U84is7V9U8rB0ZgnWKfs65lmwsvprN9x ver=0.0.5

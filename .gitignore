@@ -1,0 +1,22 @@
+# Релизные архивы — только как assets, не в git
+torappqml.tar.gz
+torappqml-setup.run
+
+# Состояние и логи (создаются при работе)
+app/run/
+app/logs/
+app/tor_data/
+app/tor.pid
+app/txtbridge/custom.txt
+app/txtbridge/working_bridges.txt
+app/.desktop_write.tmp
+
+# Мусор
+**/__pycache__/
+*.pyc
+*.pyo
+*.orig
+*.bak
+*.swp
+*.swo
+*.log
